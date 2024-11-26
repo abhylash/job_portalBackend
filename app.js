@@ -10,11 +10,14 @@ import jobRouter from "./routes/jobRouter.js";
 import applicationRouter from "./routes/applicationRouter.js";
 import { newsLetterCron } from "./automation/newsLetterCron.js";
 
-
-
 config({ path: "./config/config.env" });
 
 const app = express();
+
+// Root route to avoid "Cannot GET /" error
+app.get("/", (req, res) => {
+    res.send("Welcome to Job Portal Backend API!");
+});
 
 app.use(cors({
     origin: [process.env.FRONTEND_URL],
@@ -30,12 +33,15 @@ app.use(fileUpload({
     tempFileDir: "/tmp/",
 }));
 
-app.use("/api/v1/user",userRouter);
+// API routes
+app.use("/api/v1/user", userRouter);
 app.use("/api/v1/job", jobRouter);
 app.use("/api/v1/application", applicationRouter);
 
-newsLetterCron()
+newsLetterCron();
 connection();
+
+// Error handling middleware
 app.use(errorMiddleware);
 
 export default app;
